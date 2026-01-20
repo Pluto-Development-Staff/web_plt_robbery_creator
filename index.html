@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/drawflow@0.0.59/dist/drawflow.min.css">
+    <link rel="stylesheet" href="assets/index-ZKxpT3z2.css"> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/drawflow@0.0.59/dist/drawflow.min.js"></script>
+</head>
+<body>
+    <div id="text-ui-container" class="hidden">
+        <div class="text-ui-box">
+            <div class="text-ui-icon-wrapper">
+                <i id="text-ui-icon" class="fa-solid fa-info"></i>
+            </div>
+            <div class="text-ui-content">
+                <h4 id="text-ui-title"></h4>
+                <p id="text-ui-msg"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="container" class="hidden">
+    <div id="io-modal" class="hidden">
+        <div class="modal-overlay" onclick="closeIOModal()"></div>
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="io-modal-title"></h3>
+                <button class="modal-close-btn" onclick="closeIOModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="io-modal-desc" class="modal-desc"></p>
+                <textarea id="io-textarea" spellcheck="false"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="io-cancel-btn" class="action-btn secondary btn-full-width" onclick="closeIOModal()"></button>
+                <button id="io-action-btn" class="action-btn primary btn-full-width" onclick="executeIOAction()">
+                    <span id="io-action-label"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+        <div class="panel">
+            <div class="top-bar">
+                <span class="logo-text">
+                    PLUTO<span id="lbl-title-suffix">OS</span>
+                </span>
+                 <div class="close-btn-square" onclick="closeEditor()">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div id="page-home" class="content">
+                    <div class="section-title"><i class="fa-solid fa-server"></i><span id="lbl-status-title"></span></div>
+                    <div id="welcomeMessage">
+                        <h2 id="lbl-welcome-title"></h2>
+                        <p id="lbl-welcome-desc"></p>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-mask"></i></div>
+                            <div class="stat-info"><span class="stat-value" id="total-heists">0</span><span class="stat-label" id="lbl-stat-active"></span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="page-list" class="content hidden">
+                    <div class="list-header">
+                        <div class="section-title no-border-margin"><i class="fa-solid fa-layer-group"></i><span id="lbl-db-title"></span></div>
+                        <button class="action-btn primary" onclick="createNewRobbery()"><i class="fa-solid fa-plus"></i> <span id="lbl-btn-new"></span></button>
+                    </div>
+                    <div class="list-container" id="robbery-list-container"></div>
+                </div>
+
+                <div id="page-editor" class="content hidden">
+                    <div class="editor-topbar">
+                        <div class="editor-controls-left">
+                            <span id="editor-title"></span>
+                        </div>
+                        
+                        <div class="editor-controls-right">
+                            <button class="action-btn secondary" onclick="importGraph()">
+                                <i class="fa-solid fa-file-import"></i> <span id="lbl-btn-import"></span>
+                            </button>
+                            
+                            <button class="action-btn secondary" onclick="exportGraph()">
+                                <i class="fa-solid fa-file-export"></i> <span id="lbl-btn-export"></span>
+                            </button>
+
+                            <button class="action-btn primary btn-save" onclick="saveGraph()">
+                                <i class="fa-solid fa-floppy-disk"></i> <span id="lbl-btn-save"></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="editor-main-layout">
+                        <div class="editor-palette">
+                            <div class="palette-search-box">
+                                <div class="search-input-wrapper">
+                                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                    <input type="text" id="palette-search" placeholder="Search node..." autocomplete="off">
+                                </div>
+                            </div>
+
+                            <div id="palette-container"></div>
+                        </div>
+                        <div id="drawflow"></div>
+
+                        <div id="properties-panel">
+                            <div class="edit-modal-header"><h3 id="props-title"></h3><button class="edit-modal-close" onclick="closeProperties()">X</button></div>
+                            <div id="props-content" class="edit-modal-body"></div>
+                            <div class="edit-modal-footer">
+                                <button class="action-btn danger btn-full-width" onclick="deleteSelectedNode()"><i class="fa-solid fa-trash"></i> <span id="lbl-btn-delete-node"></span></button>
+                            </div>
+                        </div>
+
+                         <div class="bottom-nav" style="z-index: 90;">
+                            <div class="nav-btn" onclick="changePage('home')" id="nav-btn-home-editor">
+                                <span id="lbl-dashboard-editor"></span>
+                            </div>
+                            <div class="nav-btn" onclick="changePage('list')" id="nav-btn-list-editor">
+                                <span id="lbl-list-editor"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="bottom-nav" id="mainNavigation">
+                    <div class="nav-btn active" onclick="changePage('home')" id="nav-btn-home">
+                        <span id="lbl-dashboard"></span>
+                    </div>
+                    <div class="nav-btn" onclick="changePage('list')" id="nav-btn-list">
+                        <span id="lbl-list"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="skill-ui-container" class="hidden">
+        <div class="skill-panel">
+            <div class="skill-header">
+                <div class="skill-title-wrapper">
+                    <span class="skill-logo-text">
+                        <span id="lbl-st-prefix"></span><span class="highlight" id="lbl-st-suffix"></span>
+                    </span>
+                </div>
+                <div class="skill-points-display">
+                    <span class="label" id="lbl-st-points-label"></span>
+                    <span class="value" id="skill-points-val">0</span>
+                </div>
+                <div class="close-btn-square" onclick="closeSkillUI()">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+
+            <div class="skill-content">
+
+                <div class="skill-tree-view">
+                    <div id="skill-arrow-prev" class="skill-nav-arrow left" onclick="prevSkillTree()">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </div>
+
+                    <div class="tree-info-overlay">
+                        <h2 id="current-tree-title"></h2>
+                        <p id="current-tree-desc"></p>
+                    </div>
+                    
+                    <div id="tree-canvas-container">
+                        <div id="tree-nodes-layer"></div>
+                    </div>
+
+                    <div id="skill-arrow-next" class="skill-nav-arrow right" onclick="nextSkillTree()">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <script src="assets/index-n_EbWwmM.js"></script>
+</body>
+</html>
