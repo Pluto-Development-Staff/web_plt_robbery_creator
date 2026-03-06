@@ -4,10 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/drawflow@0.0.59/dist/drawflow.min.css">
-    <link rel="stylesheet" href="assets/index-ZKxpT3z2.css"> 
+    <link rel="stylesheet" href="https://unpkg.com/drawflow@0.0.59/dist/drawflow.min.css"> 
+    <style>
+        :root {
+            font-size: 16px;
+        }
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/drawflow@0.0.59/dist/drawflow.min.js"></script>
+  <script type="module" crossorigin src="./assets/index-DOQsyvlR.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-V16fKPYX.css">
 </head>
 <body>
     <div id="text-ui-container" class="hidden">
@@ -44,60 +50,142 @@
     </div>
 
         <div class="panel">
-            <div class="top-bar">
-                <span class="logo-text">
-                    PLUTO<span id="lbl-title-suffix">OS</span>
-                </span>
-                 <div class="close-btn-square" onclick="closeEditor()">
-                    <i class="fa-solid fa-xmark"></i>
+            <div class="editor-topbar">
+                <div class="editor-controls-left">
+                    <span class="logo-text" id="topbar-logo">
+                        PLUTO<span id="lbl-title-suffix"></span>
+                    </span>
+                    <span id="editor-title"></span>
+                </div>
+                
+                <div class="editor-controls-right">
+                    <button class="action-btn secondary" onclick="importGraph()">
+                        <i class="fa-solid fa-file-import"></i> <span id="lbl-btn-import"></span>
+                    </button>
+                    
+                    <button class="action-btn secondary" onclick="exportGraph()">
+                        <i class="fa-solid fa-file-export"></i> <span id="lbl-btn-export"></span>
+                    </button>
+
+                    <button class="action-btn primary btn-save" onclick="saveGraph()">
+                        <i class="fa-solid fa-floppy-disk"></i> <span id="lbl-btn-save"></span>
+                    </button>
+
+                    <div class="close-btn-square" onclick="closeEditor()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>
                 </div>
             </div>
 
             <div class="main-content">
                 <div id="page-home" class="content">
-                    <div class="section-title"><i class="fa-solid fa-server"></i><span id="lbl-status-title"></span></div>
-                    <div id="welcomeMessage">
-                        <h2 id="lbl-welcome-title"></h2>
-                        <p id="lbl-welcome-desc"></p>
+                    <div class="dashboard-header">
+                        <div class="welcome-section">
+                            <h2 id="lbl-welcome-title"></h2>
+                            <p id="lbl-welcome-desc"></p>
+                        </div>
+                        <div class="system-status">
+                            <div class="status-item">
+                                <span class="status-label" id="lbl-version-tag"></span>
+                                <span class="status-value" id="lbl-version-txt"></span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label" id="lbl-core-tag"></span>
+                                <span class="status-value online" id="lbl-status-tag"></span>
+                            </div>
+                        </div>
                     </div>
+
                     <div class="dashboard-grid">
-                        <div class="stat-card">
+                        <div class="stat-card main-stat">
                             <div class="stat-icon"><i class="fa-solid fa-mask"></i></div>
-                            <div class="stat-info"><span class="stat-value" id="total-heists">0</span><span class="stat-label" id="lbl-stat-active"></span></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="total-heists">0</span>
+                                <span class="stat-label" id="lbl-stat-active"></span>
+                            </div>
+                            <div class="stat-footer" id="lbl-sys-ready"></div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="lbl-uptime-txt"></span>
+                                <span class="stat-label" id="lbl-uptime-tag"></span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fa-solid fa-microchip"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="lbl-latency-txt"></span>
+                                <span class="stat-label" id="lbl-latency-tag"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-sections">
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <i class="fa-solid fa-rocket"></i>
+                                <span id="lbl-quick-ops-title"></span>
+                            </div>
+                            <div class="quick-actions">
+                                <button class="operation-btn" onclick="createNewRobbery()">
+                                    <div class="op-icon"><i class="fa-solid fa-plus"></i></div>
+                                    <div class="op-info">
+                                        <span class="op-title" id="lbl-op-new-title"></span>
+                                        <span class="op-desc" id="lbl-op-new-desc"></span>
+                                    </div>
+                                </button>
+                                <button class="operation-btn" onclick="changePage('list')">
+                                    <div class="op-icon"><i class="fa-solid fa-list-check"></i></div>
+                                    <div class="op-info">
+                                        <span class="op-title" id="lbl-op-manage-title"></span>
+                                        <span class="op-desc" id="lbl-op-manage-desc"></span>
+                                    </div>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div id="page-list" class="content hidden">
-                    <div class="list-header">
-                        <div class="section-title no-border-margin"><i class="fa-solid fa-layer-group"></i><span id="lbl-db-title"></span></div>
-                        <button class="action-btn primary" onclick="createNewRobbery()"><i class="fa-solid fa-plus"></i> <span id="lbl-btn-new"></span></button>
+                    <div class="list-header-modern">
+                        <div class="list-header-left">
+                            <h2 class="list-page-title"><span id="lbl-prem-title"></span> <span class="accent" id="lbl-prem-accent"></span></h2>
+                            <p class="list-page-desc" id="lbl-prem-desc"></p>
+                        </div>
+                        <div class="list-header-right">
+                            <div class="list-search-container">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="list-search-input" oninput="filterHeistList(this.value)">
+                            </div>
+                            <button class="action-btn primary" onclick="createNewRobbery()">
+                                <i class="fa-solid fa-plus"></i> <span id="lbl-btn-new-2"></span>
+                            </button>
+                        </div>
                     </div>
                     <div class="list-container" id="robbery-list-container"></div>
                 </div>
 
                 <div id="page-editor" class="content hidden">
-                    <div class="editor-topbar">
-                        <div class="editor-controls-left">
-                            <span id="editor-title"></span>
-                        </div>
-                        
-                        <div class="editor-controls-right">
-                            <button class="action-btn secondary" onclick="importGraph()">
-                                <i class="fa-solid fa-file-import"></i> <span id="lbl-btn-import"></span>
-                            </button>
-                            
-                            <button class="action-btn secondary" onclick="exportGraph()">
-                                <i class="fa-solid fa-file-export"></i> <span id="lbl-btn-export"></span>
-                            </button>
-
-                            <button class="action-btn primary btn-save" onclick="saveGraph()">
-                                <i class="fa-solid fa-floppy-disk"></i> <span id="lbl-btn-save"></span>
-                            </button>
-                        </div>
-                    </div>
                     <div class="editor-main-layout">
                         <div class="editor-palette">
+                            <div class="palette-header">
+                                <div class="palette-header-top">
+                                    <div class="palette-header-title">
+                                        <span class="bold" id="lbl-lib-title"></span> <span class="light" id="lbl-lib-title-light"></span>
+                                    </div>
+                                    <div class="palette-header-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4 19.5C4 18.837 4.26339 18.2011 4.73223 17.7322C5.20107 17.2634 5.83696 17 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <path d="M6.5 2H20V22H6.5C5.83696 22 5.20107 21.7366 4.73223 21.2678C4.26339 20.7989 4 20.163 4 19.5V4.5C4 3.83696 4.26339 3.20107 4.73223 2.73223C5.20107 2.26339 5.83696 2 6.5 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div class="palette-header-desc" id="lbl-lib-desc"></div>
+                            </div>
+
                             <div class="palette-search-box">
                                 <div class="search-input-wrapper">
                                     <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -183,6 +271,5 @@
         </div>
     </div>
         
-    <script src="assets/index-n_EbWwmM.js"></script>
 </body>
 </html>
