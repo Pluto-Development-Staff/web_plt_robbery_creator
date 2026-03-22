@@ -1,17 +1,20 @@
 Config = {}
 
-Config.InventorySystem = 'ox' -- auto, ox, qb, quasar, core, codem, tgiann, origen
-Config.TargetSystem = 'ox'    -- auto, ox, qb
+Config.InventorySystem = 'auto' -- auto, ox, qb, quasar, core, codem, tgiann, origen
+Config.TargetSystem = 'auto'    -- auto, ox, qb
 
-Config.DebugPrints = true
+Config.DebugPrints = false
 Config.DebugZones = false
 
 Config.AdminGroups = { 'admin', 'best' }
 Config.CommandName = 'robbery_editor'
 
 Config.SkillTreeCommand = 'skilltree'
+Config.PoliceJobs = { 'police' }
+Config.CountOnlyOnDutyPolice = true
 
 Config.SecondsAfterPropDissapear = 20
+Config.RemoveRequiredItemOnUse = false -- If true, using a node with "Required Item" consumes 1x item immediately
 
 Config.NodeSchemas = {
 
@@ -155,8 +158,28 @@ Config.NodeSchemas = {
                         'lockpick',
                         'sum_numbers'
                     },
-                    default = 'hacking_gtav'
+                    default = 'hack_firewall'
                 },
+            }
+        },
+
+        ['checkpolice'] = {
+            title = "Check minimum police",
+            icon = "fa-solid fa-user-shield",
+            doubleOption = true,
+            fields = {
+                { id = 'minpolice', label = 'Minimum Police', type = 'number', default = 1 },
+            }
+        },
+
+        ['checkitem'] = {
+            title = "Check required item",
+            icon = "fa-solid fa-box-open",
+            doubleOption = true,
+            fields = {
+                { id = 'item',       label = 'Item Name',                    type = 'text',   default = 'lockpick' },
+                { id = 'amount',     label = 'Min Amount',                   type = 'number', default = 1 },
+                { id = 'removeitem', label = 'Remove item on success check', type = 'select', options = { 'true', 'false' }, default = 'false' },
             }
         },
 
@@ -717,9 +740,9 @@ Config.NodeSchemas = {
                 { id = 'item',        label = 'Required Item',          type = 'text',      default = 'pl_rope' },
                 { id = 'attachmsg',   label = 'Progress Label',         type = 'text',      default = 'Attaching Rope to ATM' },
                 { id = 'attachedmsg', label = 'TextUI Label',           type = 'text',      default = 'Rope attached! Now attach it to a vehicle' },
-                { id = 'targetmsg',   label = 'Target Label',            type = 'text',      default = 'Attach Rope to Vehicle' },
-                { id = 'ropemsg',     label = 'Rope Attached Message',   type = 'text',      default = 'Rope attached! Drive away' },
-                { id = 'snapmsg',     label = 'Rope Snapped Message',    type = 'text',      default = 'The rope snapped!' },
+                { id = 'targetmsg',   label = 'Target Label',           type = 'text',      default = 'Attach Rope to Vehicle' },
+                { id = 'ropemsg',     label = 'Rope Attached Message',  type = 'text',      default = 'Rope attached! Drive away' },
+                { id = 'snapmsg',     label = 'Rope Snapped Message',   type = 'text',      default = 'The rope snapped!' },
                 { id = 'detachmsg',   label = 'ATM Detached Message',   type = 'text',      default = 'ATM detached! Rob it now' },
                 { id = 'robmsg',      label = 'Rob ATM Label',          type = 'text',      default = 'Rob Detached ATM' },
                 { id = 'robbingmsg',  label = 'Robbing Progress Label', type = 'text',      default = 'Robbing ATM...' },
@@ -770,6 +793,7 @@ Config.NodeSchemas = {
             fields = {
                 { id = 'itemname', label = 'Item Name', type = 'text',   default = 'money' },
                 { id = 'amount',   label = 'Amount',    type = 'number', default = 100 },
+                { id = 'randomrange', label = 'Random Range (example: 5-15)', type = 'text', default = '' },
             }
         },
 
@@ -779,6 +803,7 @@ Config.NodeSchemas = {
             fields = {
                 { id = 'rewardtype', label = 'Select reward', type = 'select', options = { 'money', 'black_money' }, default = 'cash' },
                 { id = 'amount',     label = 'Amount',        type = 'number', default = 100 },
+                { id = 'randomrange', label = 'Random Range (example: 5000-10000)', type = 'text', default = '' },
             }
         },
     },
@@ -955,6 +980,8 @@ Config.Translations = {
         inviteMsg = "Player [%s] invites you. [Y] Accept | [X] Decline",
         notEnoughPlayers = "Not enough players nearby!",
         lobbyFull = "Lobby full! Press [Y] to start the robbery",
+        nodeBusy = "This interaction is already being started by someone else.",
+        lobbyTimeout = "Lobby expired. Start again.",
     },
     gruppe6 = {
         takeLoot = "Take Loot",
