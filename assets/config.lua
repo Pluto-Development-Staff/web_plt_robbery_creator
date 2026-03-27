@@ -397,6 +397,16 @@ Config.NodeSchemas = {
                 { id = 'time',       label = 'Time (in seconds)', type = 'number', default = 30 },
             }
         },
+
+        ['customminigame'] = {
+            title = "Custom Minigame",
+            icon = "fa-solid fa-puzzle-piece",
+            doubleOption = true,
+            fields = {
+                { id = 'event', label = 'Client Event Name', type = 'text', default = 'my_resource:minigame:start' },
+                { id = 'args',  label = 'Event Args (comma separated)', type = 'text', default = '' },
+            }
+        },
     },
 
     TextUI = {
